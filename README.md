@@ -30,6 +30,8 @@ Built to replace manual booking with a simple, fast, and mobile-friendly online 
 ##Output Images
 **Home Page** - 
 <img width="1919" height="917" alt="image" src="https://github.com/user-attachments/assets/955897df-8386-4e4f-979c-65baa2e4a639" />
+<img width="1919" height="920" alt="image" src="https://github.com/user-attachments/assets/454a6432-01e9-4a2f-8c03-a18bb7a6acf4" />
+
 **Booking Page** - 
 <img width="1918" height="918" alt="image" src="https://github.com/user-attachments/assets/b7913dfe-01e6-4fe5-9c63-9e7f6fb9ead3" />
 **Confirmation Page** -
