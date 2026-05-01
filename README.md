@@ -15,18 +15,6 @@ Built to replace manual booking with a simple, fast, and mobile-friendly online 
 **Frontend** — HTML, Tailwind CSS, Vanilla JavaScript  
 **Database** — PostgreSQL hosted on Supabase
 
-## Project Structure
-├── website/             → Spring Boot backend (REST API)
-│   ├── entity/          → Room, Customer, Booking
-│   ├── repository/      → JPA repositories
-│   ├── service/         → Business logic
-│   ├── controller/      → REST endpoints
-│   └── dto/             → Request/Response DTOs
-│
-└── website-frontend/    → Static frontend
-    ├── index.html       → Landing page
-    ├── booking.html     → Room selection
-    └── confirm.html     → Booking confirmation form
 ##Output Images
 **Home Page** - 
 <img width="1919" height="917" alt="image" src="https://github.com/user-attachments/assets/955897df-8386-4e4f-979c-65baa2e4a639" />
