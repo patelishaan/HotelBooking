@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Room Booking — Neelgiri</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream:'#F5F0E8',
+            'deep-green':'#1A2E1A',
+            forest:'#2D4A2D',
+            gold:'#C9A84C',
+            'gold-light':'#e0bc62'
+          },
+          fontFamily:{
+            serif:['Cormorant Garamond','serif'],
+            sans:['DM Sans','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-deep-green text-cream font-sans">
+
+<!-- NAVBAR (same style) -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-16 py-4 bg-deep-green/95 border-b border-gold/20">
+  <span class="font-serif text-gold text-xl">Neelgiri</span>
+  <a href="index.html" class="text-xs tracking-widest hover:text-gold">Home</a>
+</nav>
+
+<!-- MAIN -->
+<section class="pt-32 px-6 md:px-16 min-h-screen">
+
+  <!-- TITLE -->
+  <h1 class="text-center font-serif text-[clamp(2.5rem,5vw,4rem)] mb-16">
+    Room <span class="text-gold italic">Booking</span>
+  </h1>
+
+  <!-- ROOM TYPE -->
+  <div class="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
+
+    <button onclick="selectType('SINGLE')" id="singleBtn"
+            class="px-10 py-4 border border-gold text-gold hover:bg-gold hover:text-deep-green transition">
+      Single
+    </button>
+
+    <button onclick="selectType('DOUBLE')" id="doubleBtn"
+            class="px-10 py-4 border border-gold text-gold hover:bg-gold hover:text-deep-green transition">
+      Double
+    </button>
+
+  </div>
+
+  <!-- ROOMS DISPLAY -->
+  <div id="roomsContainer" class="flex flex-wrap gap-4 justify-center">
+    <!-- Rooms will come here -->
+  </div>
+
+</section>
+
+<script>
+
+  let selectedType = "SINGLE";
+
+  function selectType(type) {
+    selectedType = type;
+
+    // UI highlight
+    document.getElementById("singleBtn").classList.remove("bg-gold","text-deep-green");
+    document.getElementById("doubleBtn").classList.remove("bg-gold","text-deep-green");
+
+    if(type === "SINGLE") {
+      document.getElementById("singleBtn").classList.add("bg-gold","text-deep-green");
+    } else {
+      document.getElementById("doubleBtn").classList.add("bg-gold","text-deep-green");
+    }
+
+    fetchRooms();
+  }
+
+  async function fetchRooms() {
+    const container = document.getElementById("roomsContainer");
+    container.innerHTML = `<p class="text-cream/50 text-sm">Loading rooms...</p>`;
+
+    try {
+      const res = await fetch(`http://localhost:8080/rooms/search?roomType=${selectedType}`);
+
+      if (!res.ok) {
+        container.innerHTML = `<p class="text-cream/50 text-sm">Could not load rooms. Please try again.</p>`;
+        return;
+      }
+
+      const data = await res.json();
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = `<p class="text-cream/50 text-sm">No rooms available for this type.</p>`;
+        return;
+      }
+
+      data.forEach(room => {
+        const div = document.createElement("div");
+        div.className = "border border-gold px-6 py-4 cursor-pointer hover:bg-gold hover:text-deep-green transition text-center min-w-[80px]";
+        div.innerText = room.roomNo;
+        div.onclick = () => handleRoomClick(room.roomNo);
+        container.appendChild(div);
+      });
+
+    } catch (e) {
+      container.innerHTML = `<p class="text-cream/50 text-sm">Could not connect to server.</p>`;
+    }
+  }
+
+  async function handleRoomClick(roomNo) {
+    try {
+      const res = await fetch(`http://localhost:8080/rooms/hold/${roomNo}`, {
+        method: "POST"
+      });
+
+      if (!res.ok) {
+        alert("Room is currently unavailable");
+        return;
+      }
+
+      // store roomNo in sessionStorage instead of URL param
+      sessionStorage.setItem("roomNo", roomNo);
+      window.location.href = "/confirm.html";
+
+    } catch (e) {
+      alert("Could not connect to server.");
+    }
+  }
+
+  // initial load — highlights Single button and fetches rooms
+  selectType("SINGLE");
+
+</script>
+
+</body>
+</html>

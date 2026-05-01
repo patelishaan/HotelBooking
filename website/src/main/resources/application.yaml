@@ -1,0 +1,22 @@
+spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ishaanpatel29976@gmail.com
+    password: etfseezqymxhpbgb  # NO spaces
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres?user=postgres.cqlijiwcjeypdgyxeham&password=IshaaN1301!!?
+    username: postgres.cqlijiwcjeypdgyxeham
+    password: IshaaN1301!!?
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update

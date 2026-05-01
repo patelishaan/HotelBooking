@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Confirm Booking — Neelgiri</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream:'#F5F0E8',
+            'deep-green':'#1A2E1A',
+            gold:'#C9A84C'
+          },
+          fontFamily:{
+            serif:['Cormorant Garamond','serif'],
+            sans:['DM Sans','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-deep-green text-cream font-sans">
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-16 py-4 bg-deep-green/95 border-b border-gold/20">
+  <span class="font-serif text-gold text-xl">Neelgiri</span>
+  <a href="index.html" class="text-xs tracking-widest hover:text-gold">Home</a>
+</nav>
+
+<!-- MAIN -->
+<section class="min-h-screen flex flex-col items-center justify-center px-6">
+
+  <div class="w-full max-w-xl bg-[#1f3a1f] p-8 rounded shadow-lg">
+
+    <h2 class="text-2xl font-serif mb-6 text-center">
+      Confirm Your Booking
+    </h2>
+
+    <!-- FORM -->
+    <form id="bookingForm" class="flex flex-col gap-4">
+
+      <input type="text" id="firstName" placeholder="First Name" required class="p-3 bg-transparent border border-gold text-cream"/>
+
+      <input type="text" id="lastName" placeholder="Last Name" required class="p-3 bg-transparent border border-gold text-cream"/>
+
+      <input type="email" id="email" placeholder="Email" required class="p-3 bg-transparent border border-gold text-cream"/>
+
+      <input type="tel" id="phone" placeholder="Phone Number" required class="p-3 bg-transparent border border-gold text-cream"/>
+
+      <!-- Dates -->
+      <div class="flex gap-4">
+        <input type="date" id="checkIn" required class="p-3 bg-transparent border border-gold text-cream w-full"/>
+        <input type="date" id="checkOut" required class="p-3 bg-transparent border border-gold text-cream w-full"/>
+      </div>
+
+      <button type="submit" id="submitBtn"
+              class="bg-gold text-deep-green py-3 mt-4 hover:opacity-90 transition
+                     disabled:opacity-50 disabled:cursor-not-allowed">
+        Confirm Booking
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+<script>
+
+  const roomNo = sessionStorage.getItem("roomNo");
+
+  if (!roomNo) {
+    alert("No room selected. Redirecting back to booking.");
+    window.location.href = "/booking.html";
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("checkIn").min  = today;
+  document.getElementById("checkOut").min = today;
+
+  document.getElementById("checkIn").addEventListener("change", (e) => {
+    document.getElementById("checkOut").min = e.target.value;
+  });
+
+  document.getElementById("bookingForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const btn = document.getElementById("submitBtn");
+    btn.disabled    = true;
+    btn.textContent = "Processing...";
+
+    const data = {
+      firstName: document.getElementById("firstName").value,
+      lastName:  document.getElementById("lastName").value,
+      email:     document.getElementById("email").value,
+      phoneNo:   parseInt(document.getElementById("phone").value),
+      checkIn:   document.getElementById("checkIn").value,
+      checkOut:  document.getElementById("checkOut").value,
+      roomNo:    parseInt(roomNo)
+    };
+
+    console.log("Sending:", JSON.stringify(data)); // remove after testing
+
+    try {
+      const res = await fetch("http://localhost:8080/booking/createBooking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        alert("Booking failed: " + text);
+        btn.disabled    = false;          // re-enable so they can fix and retry
+        btn.textContent = "Confirm Booking";
+        return;
+      }
+
+      const result = await res.json();
+      sessionStorage.removeItem("roomNo");
+      alert("Booking successful! Booking ID: " + result.bookingId);
+      window.location.href = "/index.html";
+
+    } catch (err) {
+      alert("Could not connect to server. Please try again.");
+      btn.disabled    = false;            // re-enable on network error too
+      btn.textContent = "Confirm Booking";
+    }
+
+  });
+
+</script>
+
+</body>
+</html>

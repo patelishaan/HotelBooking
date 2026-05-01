@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neelgiri — Akbarpur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                cream:        '#F5F0E8',
+                'deep-green': '#1A2E1A',
+                forest:       '#2D4A2D',
+                gold:         '#C9A84C',
+                'gold-light': '#e0bc62',
+                'light-green':'#4A7C4A',
+              },
+              fontFamily: {
+                serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+                sans:  ['DM Sans', 'sans-serif'],
+              },
+            },
+          },
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .dot-grid {
+          background-image: radial-gradient(circle, rgba(201,168,76,0.08) 1px, transparent 1px);
+          background-size: 36px 36px;
+        }
+        .reveal { opacity: 0; transform: translateY(36px); transition: opacity .7s ease, transform .7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        @keyframes scrollBounce {
+          0%,100% { transform: translateX(-50%) translateY(0); }
+          50%      { transform: translateX(-50%) translateY(9px); }
+        }
+        .scroll-bounce { animation: scrollBounce 2s ease-in-out infinite; }
+        @keyframes heroIn {
+          from { opacity:0; transform: translateY(28px); }
+          to   { opacity:1; transform: translateY(0); }
+        }
+        .hero-in { animation: heroIn .9s ease forwards; }
+    </style>
+</head>
+<body class="font-sans bg-cream text-deep-green overflow-x-hidden">
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between
+            px-6 md:px-16 py-4 bg-deep-green/95 backdrop-blur-md border-b border-gold/20">
+    <a href="#" class="font-serif text-2xl font-semibold text-gold tracking-wide">
+        Neel<em class="not-italic font-normal italic">giri</em>
+    </a>
+    <ul class="hidden md:flex items-center gap-10 list-none">
+        <li><a href="#features" class="text-cream/70 hover:text-gold text-xs uppercase tracking-widest transition-colors duration-200">About</a></li>
+        <li><a href="contact.html" class="text-cream/70 hover:text-gold text-xs uppercase tracking-widest transition-colors duration-200">Contact</a></li>
+        <li><a href="https://maps.google.com" target="_blank" class="text-cream/70 hover:text-gold text-xs uppercase tracking-widest transition-colors duration-200">Maps</a></li>
+        <li>
+            <a href="booking.html"
+               class="bg-gold text-deep-green text-xs font-medium uppercase tracking-widest
+                px-5 py-2.5 hover:bg-gold-light transition-all duration-200 hover:-translate-y-0.5 inline-block">
+                Book Room
+            </a>
+        </li>
+    </ul>
+    <button id="hamburger" class="md:hidden flex flex-col gap-1.5 p-1 z-[101]" aria-label="Toggle menu">
+        <span id="h1" class="block w-6 h-0.5 bg-gold transition-all duration-300 origin-center"></span>
+        <span id="h2" class="block w-6 h-0.5 bg-gold transition-all duration-300"></span>
+        <span id="h3" class="block w-6 h-0.5 bg-gold transition-all duration-300 origin-center"></span>
+    </button>
+</nav>
+
+<!-- mobile drawer -->
+<div id="mobileMenu"
+     class="fixed inset-0 z-[99] bg-deep-green flex flex-col items-center justify-center gap-10
+            translate-x-full translate-y-16 transition-transform duration-300 ease-in-out">
+    <a href="#features"   onclick="closeMenu()" class="text-cream/80 hover:text-gold text-lg uppercase tracking-widest">About</a>
+    <a href="contact.html" onclick="closeMenu()" class="text-cream/80 hover:text-gold text-lg uppercase tracking-widest">Contact</a>
+    <a href="https://maps.google.com" target="_blank" onclick="closeMenu()" class="text-cream/80 hover:text-gold text-lg uppercase tracking-widest">Maps</a>
+    <a href="booking.html" onclick="closeMenu()"
+       class="bg-gold text-deep-green text-sm font-medium uppercase tracking-widest px-8 py-3 mt-4 inline-block">
+        Book Room
+    </a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="relative min-h-screen flex items-center justify-center bg-deep-green overflow-hidden">
+
+    <!-- glows -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2
+                w-[600px] h-[600px] rounded-full
+                bg-[radial-gradient(circle,rgba(74,124,74,0.25)_0%,transparent_70%)]"></div>
+        <div class="absolute top-1/4 right-1/4
+                w-[400px] h-[400px] rounded-full
+                bg-[radial-gradient(circle,rgba(201,168,76,0.1)_0%,transparent_70%)]"></div>
+    </div>
+
+    <!-- dot overlay -->
+    <div class="absolute inset-0 dot-grid pointer-events-none opacity-80"></div>
+
+    <!-- hotel silhouette -->
+    <svg class="absolute inset-0 w-full h-full opacity-[0.07] pointer-events-none"
+         viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <rect x="150" y="140" width="900" height="420" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+        <rect x="270" y="190" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="400" y="190" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="530" y="160" width="140" height="400" fill="none" stroke="#C9A84C" stroke-width="2"/>
+        <rect x="720" y="190" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="850" y="190" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="270" y="340" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="400" y="340" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="720" y="340" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <rect x="850" y="340" width="90" height="110" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <polygon points="580,80 600,45 620,80" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+        <line x1="80" y1="560" x2="1120" y2="560" stroke="#C9A84C" stroke-width="1"/>
+    </svg>
+
+    <!-- content -->
+    <div class="relative z-10 text-center px-6 hero-in max-w-3xl">
+    <span class="inline-block text-gold text-[0.65rem] uppercase tracking-[0.3em]
+                 border-b border-gold/40 pb-2 mb-6">
+      Akbarpur, Ambedkar Nagar · Uttar Pradesh
+    </span>
+        <h1 class="font-serif font-semibold text-cream leading-[1.05]
+               text-[clamp(3rem,9vw,7rem)]">
+            Where Every Guest<br>
+            <em class="text-gold not-italic italic">Feels Like Family</em>
+        </h1>
+        <p class="text-cream/55 font-light text-[0.95rem] leading-relaxed max-w-md mx-auto mt-5 mb-9">
+            Pure vegetarian meals, clean comfortable rooms, and genuine warmth —
+            right in the heart of Purvanchal.
+        </p>
+        <div class="flex flex-wrap gap-3 justify-center">
+            <a href="booking.html"
+               class="bg-gold text-deep-green text-[0.8rem] font-medium uppercase tracking-widest
+                px-8 py-3.5 hover:bg-gold-light hover:-translate-y-0.5
+                transition-all duration-200 shadow-[0_8px_24px_rgba(201,168,76,0.25)] inline-block">
+                Book Your Room
+            </a>
+            <a href="#features"
+               class="border border-cream/30 text-cream text-[0.8rem] font-medium uppercase tracking-widest
+                px-8 py-3.5 hover:border-gold hover:text-gold transition-all duration-200 inline-block">
+                Explore More
+            </a>
+        </div>
+    </div>
+
+    <!-- scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 scroll-bounce flex flex-col items-center gap-2
+              text-cream/30 text-[0.6rem] uppercase tracking-[0.2em]">
+        <div class="w-px h-10 bg-gradient-to-b from-gold to-transparent"></div>
+        <span>Scroll</span>
+    </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="bg-cream px-6 md:px-16 py-24" id="features">
+
+    <div class="text-center mb-20">
+        <span class="text-light-green text-[0.65rem] uppercase tracking-[0.3em] block mb-3">What We Offer</span>
+        <h2 class="font-serif font-semibold text-deep-green leading-snug text-[clamp(2rem,4vw,3rem)]">
+            Simple Comforts,<br>Genuine Care
+        </h2>
+    </div>
+
+    <div class="max-w-5xl mx-auto flex flex-col gap-10">
+
+        <!-- Feature 1 — image left -->
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 overflow-hidden shadow-sm">
+            <div class="relative min-h-[240px] md:min-h-[340px] bg-forest flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#2a3d1a]/60 to-deep-green/90"></div>
+                <!-- swap this span for an <img> once you have photos -->
+                <img src="food_neelgiri.png" class="relative z-10 w-full h-full object-cover" />
+<!--                <span class="relative z-10 text-6xl opacity-50 select-none">🍛</span>-->
+            </div>
+            <div class="bg-white border-l-4 border-gold px-8 md:px-10 py-10 flex flex-col justify-center">
+                <span class="font-serif text-[3.5rem] font-semibold text-gold/15 leading-none -mb-3 select-none">01</span>
+                <h3 class="font-serif text-[1.75rem] font-semibold text-deep-green mb-3 leading-snug">Pure Veg Thali</h3>
+                <div class="w-10 h-0.5 bg-gold mb-4"></div>
+                <p class="text-[#5A5A5A] text-sm leading-[1.85] font-light">
+                    Home-cooked vegetarian thalis made fresh every day with locally sourced ingredients.
+                    Wholesome, flavourful, and priced so that nobody ever leaves hungry.
+                </p>
+                <span class="mt-5 inline-flex items-center gap-2 bg-deep-green/5 text-forest
+                     text-xs font-medium px-3 py-1.5 w-fit tracking-wide">
+          🌿 100% Vegetarian
+        </span>
+            </div>
+        </div>
+
+        <!-- Feature 2 — image right -->
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 overflow-hidden shadow-sm">
+            <div class="bg-white border-l-4 md:border-l-0 md:border-r-4 border-gold
+                  px-8 md:px-10 py-10 flex flex-col justify-center order-2 md:order-1">
+                <span class="font-serif text-[3.5rem] font-semibold text-gold/15 leading-none -mb-3 select-none">02</span>
+                <h3 class="font-serif text-[1.75rem] font-semibold text-deep-green mb-3 leading-snug">Air Conditioned Stay</h3>
+                <div class="w-10 h-0.5 bg-gold mb-4"></div>
+                <p class="text-[#5A5A5A] text-sm leading-[1.85] font-light">
+                    Beat the heat with AC rooms available at minimal extra cost.
+                    Prefer a gentler cool? Cooler-equipped rooms are also on offer —
+                    comfort entirely on your terms.
+                </p>
+                <span class="mt-5 inline-flex items-center gap-2 bg-deep-green/5 text-forest
+                     text-xs font-medium px-3 py-1.5 w-fit tracking-wide">
+          🌡️ AC &amp; Cooler Options
+        </span>
+            </div>
+            <div class="relative min-h-[240px] md:min-h-[340px] bg-[#1a2d3a] flex items-center justify-center overflow-hidden
+                  order-1 md:order-2">
+                <div class="absolute inset-0 bg-gradient-to-bl from-[#1a3a4a]/60 to-deep-green/90"></div>
+                <img src="Neelgiri_AC.png" class="relative z-10 w-full h-full object-cover" />
+            </div>
+        </div>
+
+        <!-- Feature 3 — image left -->
+        <div class="reveal grid grid-cols-1 md:grid-cols-2 overflow-hidden shadow-sm">
+            <div class="relative min-h-[240px] md:min-h-[340px] bg-[#2d2a1a] flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#3d3a1a]/60 to-deep-green/90"></div>
+                <img src="Neelgiri_cctv.png" class="relative z-10 w-full h-full object-cover" />
+            </div>
+            <div class="bg-white border-l-4 border-gold px-8 md:px-10 py-10 flex flex-col justify-center">
+                <span class="font-serif text-[3.5rem] font-semibold text-gold/15 leading-none -mb-3 select-none">03</span>
+                <h3 class="font-serif text-[1.75rem] font-semibold text-deep-green mb-3 leading-snug">Safe &amp; Secure Stay</h3>
+                <div class="w-10 h-0.5 bg-gold mb-4"></div>
+                <p class="text-[#5A5A5A] text-sm leading-[1.85] font-light">
+                    All entries, exits, and common areas are under round-the-clock CCTV surveillance.
+                    Rest easy — your safety is always our top priority.
+                </p>
+                <span class="mt-5 inline-flex items-center gap-2 bg-deep-green/5 text-forest
+                     text-xs font-medium px-3 py-1.5 w-fit tracking-wide">
+          🔒 24/7 CCTV Surveillance
+        </span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="relative bg-deep-green py-28 px-6 text-center overflow-hidden">
+    <div class="absolute inset-0 dot-grid pointer-events-none"></div>
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px]
+              bg-[radial-gradient(ellipse,rgba(74,124,74,0.2)_0%,transparent_70%)] pointer-events-none"></div>
+    <div class="relative z-10 reveal">
+        <span class="text-gold text-[0.65rem] uppercase tracking-[0.3em] block mb-5">Ready to Stay?</span>
+        <h2 class="font-serif font-semibold text-cream leading-[1.1] text-[clamp(2.2rem,5vw,4rem)] mb-5">
+            Book Your Room at<br>
+            <em class="text-gold not-italic italic">Neelgiri</em> Today
+        </h2>
+        <p class="text-cream/50 font-light text-sm max-w-md mx-auto leading-relaxed mb-9">
+            No account needed. Pick your room, share your details, and you're set.
+            Simple, fast, and honest pricing — always.
+        </p>
+        <a href="booking.html"
+           class="inline-block bg-gold text-deep-green text-[0.8rem] font-medium uppercase tracking-widest
+              px-10 py-4 hover:bg-gold-light hover:-translate-y-0.5 transition-all duration-200
+              shadow-[0_8px_32px_rgba(201,168,76,0.2)]">
+            Book a Room Now
+        </a>
+    </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="bg-[#0d1a0d] border-t border-gold/20 px-6 md:px-16 py-6
+               flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+    <span class="font-serif text-gold text-xl font-semibold">Neelgiri</span>
+    <ul class="flex gap-6 list-none">
+        <li><a href="contact.html"  class="text-cream/35 hover:text-gold text-xs tracking-wide transition-colors">Contact</a></li>
+        <li><a href="https://maps.app.goo.gl/jjdYrKMK1j3rbbbZA" target="_blank" class="text-cream/35 hover:text-gold text-xs tracking-wide transition-colors">Maps</a></li>
+        <li><a href="booking.html"  class="text-cream/35 hover:text-gold text-xs tracking-wide transition-colors">Book Room</a></li>
+    </ul>
+    <span class="text-cream/25 text-xs tracking-wide">© 2026 Neelgiri. All rights reserved.</span>
+</footer>
+
+<script>
+    // ── Hamburger ──
+    const hamburger   = document.getElementById('hamburger');
+    const mobileMenu  = document.getElementById('mobileMenu');
+    const h1 = document.getElementById('h1');
+    const h2 = document.getElementById('h2');
+    const h3 = document.getElementById('h3');
+    let menuOpen = false;
+
+    function closeMenu() {
+      menuOpen = false;
+      mobileMenu.classList.add('translate-x-full');
+      mobileMenu.classList.remove('translate-x-0');
+      h1.style.transform = '';
+      h2.style.opacity   = '1';
+      h3.style.transform = '';
+    }
+
+    hamburger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      if (menuOpen) {
+        mobileMenu.classList.remove('translate-x-full');
+        mobileMenu.classList.add('translate-x-0');
+        h1.style.transform = 'rotate(45deg) translate(5px, 5px)';
+        h2.style.opacity   = '0';
+        h3.style.transform = 'rotate(-45deg) translate(5px, -5px)';
+      } else {
+        closeMenu();
+      }
+    });
+
+    // ── Scroll reveal ──
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — Neelgiri</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream:       '#F5F0E8',
+            'deep-green':'#1A2E1A',
+            forest:      '#2D4A2D',
+            gold:        '#C9A84C',
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'serif'],
+            sans:  ['DM Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* scrollable table wrapper */
+    .table-wrap { overflow-x: auto; }
+
+    /* status badge colours */
+    .badge-confirmed { background: rgba(74,124,74,0.25); color: #7ec87e; }
+    .badge-cancelled { background: rgba(180,60,60,0.25); color: #f08080; }
+    .badge-pending   { background: rgba(201,168,76,0.2); color: #C9A84C; }
+
+    /* skeleton pulse */
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
+    .skeleton { animation: pulse 1.4s ease-in-out infinite; background:#2D4A2D; border-radius:4px; }
+  </style>
+</head>
+
+<body class="bg-deep-green text-cream font-sans min-h-screen">
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center
+            px-6 md:px-16 py-4 bg-deep-green/95 border-b border-gold/20">
+  <span class="font-serif text-gold text-xl">Neelgiri <span class="text-cream/40 text-sm font-sans font-light">Admin</span></span>
+  <a href="index.html" class="text-xs tracking-widest text-cream/50 hover:text-gold transition">← Back to Site</a>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main class="pt-28 pb-16 px-4 md:px-10 max-w-[1400px] mx-auto">
+
+  <!-- Page title -->
+  <div class="mb-10">
+    <h1 class="font-serif text-[clamp(2rem,4vw,3rem)] leading-tight">
+      Admin <span class="text-gold italic">Dashboard</span>
+    </h1>
+    <p class="text-cream/40 text-sm mt-1">Manage bookings, rooms and customers</p>
+  </div>
+
+  <!-- ═══ TABS ═══ -->
+  <div class="flex flex-wrap gap-2 mb-8 border-b border-gold/20 pb-4">
+    <button onclick="switchTab('confirmed')" id="tab-confirmed"
+            class="tab-btn active-tab px-5 py-2 text-xs uppercase tracking-widest transition">
+      Confirmed Bookings
+    </button>
+    <button onclick="switchTab('rooms')" id="tab-rooms"
+            class="tab-btn px-5 py-2 text-xs uppercase tracking-widest transition">
+      Rooms
+    </button>
+  </div>
+
+  <!-- ═══ CONFIRMED BOOKINGS PANEL ═══ -->
+  <div id="panel-confirmed">
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+      <h2 class="font-serif text-xl text-gold">Confirmed Bookings</h2>
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Date filter -->
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-cream/40 uppercase tracking-widest whitespace-nowrap">Check-in Date</label>
+          <input type="date" id="date-filter"
+                 onchange="applyDateFilter()"
+                 class="bg-transparent border border-gold/40 text-cream text-xs px-3 py-1.5
+                        focus:border-gold focus:outline-none transition" />
+          <button onclick="clearDateFilter()"
+                  id="clear-filter-btn"
+                  class="hidden text-xs text-cream/40 hover:text-gold border border-gold/20
+                         hover:border-gold/60 px-3 py-1.5 transition">
+            Clear
+          </button>
+        </div>
+        <button onclick="loadConfirmed()" class="text-xs text-cream/40 hover:text-gold border border-gold/20
+                                                  hover:border-gold/60 px-3 py-1.5 transition">
+          Refresh
+        </button>
+      </div>
+    </div>
+    <div id="confirmed-error" class="hidden text-red-400 text-sm mb-4"></div>
+    <div class="table-wrap rounded border border-gold/20">
+      <table class="w-full text-sm">
+        <thead>
+        <tr class="bg-[#142414] border-b border-gold/20 text-gold/80 text-xs uppercase tracking-widest">
+          <th class="px-4 py-3 text-left">Booking ID</th>
+          <th class="px-4 py-3 text-left">Room No</th>
+          <th class="px-4 py-3 text-left">First Name</th>
+          <th class="px-4 py-3 text-left">Last Name</th>
+          <th class="px-4 py-3 text-left">Email</th>
+          <th class="px-4 py-3 text-left">Phone</th>
+          <th class="px-4 py-3 text-left">Check In</th>
+          <th class="px-4 py-3 text-left">Check Out</th>
+        </tr>
+        </thead>
+        <tbody id="confirmed-body">
+        <tr><td colspan="8" class="px-4 py-6 text-center text-cream/30 text-xs">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ ROOMS PANEL ═══ -->
+  <div id="panel-rooms" class="hidden">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="font-serif text-xl text-gold">Rooms</h2>
+      <button onclick="loadRooms()" class="text-xs text-cream/40 hover:text-gold border border-gold/20
+                                            hover:border-gold/60 px-3 py-1.5 transition">
+        Refresh
+      </button>
+    </div>
+    <div id="rooms-error" class="hidden text-red-400 text-sm mb-4"></div>
+    <div class="flex gap-3 mb-4">
+      <button onclick="loadRooms('SINGLE')" id="filter-single"
+              class="filter-btn active-filter text-xs px-4 py-1.5 border border-gold/40 transition">
+        Single
+      </button>
+      <button onclick="loadRooms('DOUBLE')" id="filter-double"
+              class="filter-btn text-xs px-4 py-1.5 border border-gold/40 transition">
+        Double
+      </button>
+    </div>
+    <div class="table-wrap rounded border border-gold/20">
+      <table class="w-full text-sm">
+        <thead>
+        <tr class="bg-[#142414] border-b border-gold/20 text-gold/80 text-xs uppercase tracking-widest">
+          <th class="px-4 py-3 text-left">Room ID</th>
+          <th class="px-4 py-3 text-left">Room No</th>
+          <th class="px-4 py-3 text-left">Type</th>
+          <th class="px-4 py-3 text-left">Price / Night</th>
+          <th class="px-4 py-3 text-left">Status</th>
+        </tr>
+        </thead>
+        <tbody id="rooms-body">
+        <tr><td colspan="5" class="px-4 py-6 text-center text-cream/30 text-xs">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══ STYLES for tabs ═══ -->
+<style>
+  .tab-btn      { color: rgba(245,240,232,0.4); border-bottom: 2px solid transparent; }
+  .tab-btn:hover{ color: #C9A84C; }
+  .active-tab   { color: #C9A84C; border-bottom: 2px solid #C9A84C; }
+
+  .filter-btn       { color: rgba(245,240,232,0.5); }
+  .filter-btn:hover { color: #C9A84C; border-color: #C9A84C; }
+  .active-filter    { color: #C9A84C; border-color: #C9A84C; background: rgba(201,168,76,0.08); }
+
+  tbody tr:nth-child(even) { background: rgba(45,74,45,0.2); }
+  tbody tr:hover            { background: rgba(201,168,76,0.07); }
+  td { padding: 10px 16px; color: rgba(245,240,232,0.8); border-bottom: 1px solid rgba(201,168,76,0.08); }
+</style>
+
+<script>
+  const API = "http://localhost:8080";
+
+  // ── TAB SWITCHING ──────────────────────────────────────────────
+  const panels = ["confirmed", "rooms"];
+
+  function switchTab(name) {
+    panels.forEach(p => {
+      document.getElementById("panel-" + p).classList.add("hidden");
+      document.getElementById("tab-" + p).classList.remove("active-tab");
+    });
+    document.getElementById("panel-" + name).classList.remove("hidden");
+    document.getElementById("tab-"   + name).classList.add("active-tab");
+
+    if (name === "confirmed") loadConfirmed();
+    if (name === "rooms")     loadRooms("SINGLE");
+  }
+
+  // ── STATUS BADGE ───────────────────────────────────────────────
+  function badge(status) {
+    if (!status) return "-";
+    const cls = status === "CONFIRMED" ? "badge-confirmed"
+              : status === "CANCELLED" ? "badge-cancelled"
+              : "badge-pending";
+    return `<span class="${cls} px-2 py-0.5 rounded text-[0.7rem] font-medium uppercase tracking-wide">${status}</span>`;
+  }
+
+  function emptyRow(cols, msg) {
+    return `<tr><td colspan="${cols}" class="px-4 py-8 text-center text-cream/30 text-xs">${msg}</td></tr>`;
+  }
+
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.remove("hidden");
+  }
+
+  function hideError(id) {
+    document.getElementById(id).classList.add("hidden");
+  }
+
+  // ── CONFIRMED BOOKINGS ─────────────────────────────────────────
+  let allConfirmedData = []; // keep full dataset for client-side date filtering
+
+  function renderConfirmedRows(data) {
+    const body = document.getElementById("confirmed-body");
+    if (!data.length) {
+      body.innerHTML = emptyRow(8, "No confirmed bookings for this date.");
+      return;
+    }
+    body.innerHTML = data.map(b => `
+      <tr>
+        <td>${b.bookingId}</td>
+        <td>${b.roomNo}</td>
+        <td>${b.firstName}</td>
+        <td>${b.lastName}</td>
+        <td>${b.email}</td>
+        <td>${b.phoneNo}</td>
+        <td>${b.checkIn  ?? "-"}</td>
+        <td>${b.checkOut ?? "-"}</td>
+      </tr>`).join("");
+  }
+
+  function applyDateFilter() {
+    const date = document.getElementById("date-filter").value; // "YYYY-MM-DD" or ""
+    document.getElementById("clear-filter-btn").classList.toggle("hidden", !date);
+
+    if (!date) {
+      renderConfirmedRows(allConfirmedData);
+      return;
+    }
+    const filtered = allConfirmedData.filter(b => b.checkIn === date);
+    renderConfirmedRows(filtered);
+  }
+
+  function clearDateFilter() {
+    document.getElementById("date-filter").value = "";
+    document.getElementById("clear-filter-btn").classList.add("hidden");
+    renderConfirmedRows(allConfirmedData);
+  }
+
+  async function loadConfirmed() {
+    hideError("confirmed-error");
+    const body = document.getElementById("confirmed-body");
+    body.innerHTML = emptyRow(8, "Loading...");
+
+    try {
+      const res  = await fetch(`${API}/booking/confirmed`);
+      if (!res.ok) throw new Error("Server error " + res.status);
+      allConfirmedData = await res.json();
+
+      if (!allConfirmedData.length) {
+        body.innerHTML = emptyRow(8, "No confirmed bookings yet.");
+        return;
+      }
+
+      // re-apply any active date filter after refresh
+      applyDateFilter();
+
+    } catch (e) {
+      body.innerHTML = emptyRow(8, "Failed to load.");
+      showError("confirmed-error", "Could not connect to server: " + e.message);
+    }
+  }
+
+  // ── ROOMS ──────────────────────────────────────────────────────
+  let currentRoomType = "SINGLE";
+
+  async function loadRooms(type) {
+    if (type) {
+      currentRoomType = type;
+      document.getElementById("filter-single").classList.toggle("active-filter", type === "SINGLE");
+      document.getElementById("filter-double").classList.toggle("active-filter", type === "DOUBLE");
+    }
+
+    hideError("rooms-error");
+    const body = document.getElementById("rooms-body");
+    body.innerHTML = emptyRow(5, "Loading...");
+
+    try {
+      const res  = await fetch(`${API}/rooms/search?roomType=${currentRoomType}`);
+      if (!res.ok) throw new Error("Server error " + res.status);
+      const data = await res.json();
+
+      if (!data.length) {
+        body.innerHTML = emptyRow(5, "No rooms found.");
+        return;
+      }
+
+      body.innerHTML = data.map(r => `
+        <tr>
+          <td>${r.roomId}</td>
+          <td>${r.roomNo}</td>
+          <td>${r.roomType}</td>
+          <td>Rs. ${r.pricePerNight}</td>
+          <td>${badge(r.roomStatus)}</td>
+        </tr>`).join("");
+
+    } catch (e) {
+      body.innerHTML = emptyRow(5, "Failed to load.");
+      showError("rooms-error", "Could not connect to server: " + e.message);
+    }
+  }
+
+  // ── INIT ───────────────────────────────────────────────────────
+  loadConfirmed();
+</script>
+
+</body>
+</html>
